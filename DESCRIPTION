@@ -1,0 +1,15 @@
+Package: SimpLin
+Type: Package
+Title: A simple linear regression function 
+Version: 0.0.1
+Date: 2025-09-04
+Authors@R: person("Yingli", "Li", role = c("aut",
+     "cre"), email = "Yingli.li@colostate.edu")
+Description: A simple linear regression package to output estimated regression coefficientes, standard errors, 95% CI, residuals, and predicted values as a list.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.1.0)
+LinkingTo: Rcpp
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
