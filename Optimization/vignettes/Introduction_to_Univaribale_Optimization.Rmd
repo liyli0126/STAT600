@@ -1,8 +1,8 @@
 ---
-title: "Introduction_to_Univaribale_Optimization"
+title: "Introduction to Univariable and_Multivariable Optimization"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction_to_Univaribale_Optimization}
+  %\VignetteIndexEntry{Introduction_to_Univariable_and_Multivariable_Optimization}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,14 +16,16 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-The 'Optimization' package provides four univaraible optimization methods to estimate $\theta$. Including:
-\begin{enumerate}
-  \item Bisection
-  \item Newton-Raphson
-  \item Fisher Scoring
-  \item Secant Method 
-\end{enumerate}
+The 'Optimization' package provides four univarable optimization methods to estimate $\theta$. Including:
 
+- Bisection
+- Newton-Raphson
+- Fisher Scoring
+- Secant Method 
+
+And multivariable optimization of Newton-Raphson methods.
+
+### Theory
 As for Bisection, Newton-Raphson, Fisher Scoring, Secant Method, we can
 find the formula to estimate $\hat{\theta}$ in the book, i.e.
 
@@ -48,44 +50,45 @@ x^{(t+1)} = x^{(t)} - g'(x^{(t)})\frac{x^{(t)} - x^{(t-1)}}{g'(x^{(t)}) - g'(x^{
 $$ Then yields, $$
 \theta^{(t+1)} = \theta^{(t)} - \ell'(\theta^{(t)})\frac{\theta^{(t)} - \theta^{(t-1)}}{\ell'(\theta^{(t)}) - \ell'(\theta^{(t-1)})}
 $$
+**Prove the Fisher information of the Cauchy distribution:**
 
 The one thing is to prove the Fisher information of the Cauchy
 distribution: $$
 I(\theta) = - \mathbb{E}[\ell''(\theta)] = \frac{n}{2}
 $$
 
-\textbf{Proof:} We have computed the likelihood contribution
+**Proof:** We have computed the likelihood contribution
 $\ell_i(\theta)$ of a single observation $X_i$ and its derivative
-$\ell_i'(\theta)$ in Problem 1. The second derivative with respect to
-$\theta$ is: $$
+$\ell_i'(\theta)$. The second derivative with respect to
+$\theta$ is: \[
 \ell_i''(\theta) = -2\cdot\frac{1-(X_i-\theta)^2}{\big(1+(X_i-\theta)^2\big)^2}.
-$$
+\]
 
 Consider to compute the expectation of the second derivative
 $\mathbb{E}\big[\ell_i''(\theta)\big]$.
 
-Let $Y = X_i - \theta$. Then $Y\sim\text{Cauchy}(0,1)$ with density $$
+Let $Y = X_i - \theta$. Then $Y\sim\text{Cauchy}(0,1)$ with density \[
 f_Y(y) = \frac{1}{\pi(1+y^2)}.
-$$ Thus $$
+\] Thus \[
 \mathbb{E}\big[\ell_i''(\theta)\big]
 = -2 \int_{-\infty}^{\infty} \frac{1-y^2}{\big(1+y^2\big)^2}\cdot \frac{1}{\pi(1+y^2)}\,dy
 = -\frac{2}{\pi}\int_{-\infty}^{\infty} \frac{1-y^2}{(1+y^2)^3}\,dy.
-$$
+\]
 
-Define $$
+Define \[
 I := \int_{-\infty}^{\infty} \frac{1-y^2}{(1+y^2)^3}\,dy.
-$$ We evaluate $I$ by splitting the integrand: $$
+\] We evaluate $I$ by splitting the integrand: \[
 I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy
     - \int_{-\infty}^{\infty}\frac{y^2}{(1+y^2)^3}\,dy.
-$$
+\]
 
 First, the residue theorem is used to compute
-$$ I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy$$ Consider the
+\[ I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy\] Consider the
 complex function
 
-$$
+\[
 f(z) = \frac{1}{(1+z^2)^3}.
-$$
+\]
 
 On the real axis, this matches the integrand. The poles occur at
 $1+z^2=0 \Rightarrow z = \pm i$ and both are poles of order three.
@@ -94,13 +97,13 @@ We choose the semicircular contour in the upper half-plane with radius
 $R \to \infty$. Since the integrand decays like $1/z^6$ as
 $|z|\to\infty$, the contribution along the arc vanishes. Therefore,
 
-$$
+\[
 \int_{-\infty}^{\infty} \frac{dx}{(1+x^2)^3} = 2\pi i \cdot \text{Res}(f, z=i).
-$$
+\]
 
 At $z=i$ (a pole of order three), the residue is given by
 
-$$
+\[
 \begin{aligned}
 \text{Res}(f,z=i) &= \frac{1}{2!} \lim_{z\to i} \frac{d^2}{dz^2}\Big[ (z-i)^3 f(z) \Big]\\
 &= \frac{1}{2!} \lim_{z\to i} \frac{d^2}{dz^2}\Big[ (z-i)^3 \frac{1}{(1+z^2)^3} \Big]\\
@@ -108,7 +111,7 @@ $$
 &= \frac{1}{2!} \lim_{z\to i} 12 (z+i)^{-5}\\
 &=  2\pi i \cdot \frac{3}{16 i} = \frac{3\pi}{8}.
 \end{aligned}
-$$
+\]
 
 Therefore,
 $I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy = \frac{3\pi}{8}.$
@@ -118,63 +121,40 @@ $y=\tan\theta$, then $dy=\sec^{2}\theta \, d\theta$ and
 $1+y^{2}=\sec^{2}\theta$.\
 The integral becomes
 
-$$
+\]
 I = \int_{-\pi/2}^{\pi/2} \frac{\tan^{2}\theta}{\sec^{6}\theta} \cdot \sec^{2}\theta \, d\theta
 = \int_{-\pi/2}^{\pi/2} \tan^{2}\theta \cos^{4}\theta \, d\theta.
-$$
+\]
 
 Since $\tan\theta = \frac{\sin\theta}{\cos\theta}$, we get
 
-$$
+\[
 I = \int_{-\pi/2}^{\pi/2} \sin^{2}\theta \cos^{2}\theta \, d\theta = 2 \int_{0}^{\pi/2} \sin^{2}\theta \cos^{2}\theta \, d\theta =2 \cdot \int_{0}^{\pi/2} \frac{1}{8}\bigl(1-\cos(4\theta)\bigr)\, d\theta
 = \frac{1}{4}\left[\theta - \tfrac{1}{4}\sin(4\theta)\right]_{0}^{\pi/2}= \frac{\pi}{8}.
-$$
+\]
 
-Therefore $$
+Therefore \[
 I =\int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy - \int_{-\infty}^{\infty}\frac{y^2}{(1+y^2)^3}\,dy = \frac{3\pi}{8}-\frac{\pi}{8}=\frac{\pi}{4}.
-$$
+\]
 
-Hence $$
+Hence \[
 \mathbb{E}\big[\ell_i''(\theta)\big] = -\frac{2}{\pi}\cdot \frac{\pi}{4} = -\frac{1}{2}.
-$$
+\]
 
-The Fisher information for a single observation is $$
+The Fisher information for a single observation is  \[
 I_1(\theta) = -\mathbb{E}\big[\ell_i''(\theta)\big] = -\left(-\frac{1}{2}\right)=\frac{1}{2}.
-$$ For $n$ independent observations the total Fisher information is $$
+\] For $n$ independent observations the total Fisher information is \[
 I_n(\theta) = n I_1(\theta) = \frac{n}{2}.
-$$
+\]
 
 
-### The convergence criteria
+#### The convergence criteria
 
 We use the absolute convergence criterion for each method, i.e. stopping
-when $$|\theta^{(t+1)}- \theta^{(t)}|< \epsilon.$$ So, the convergence
-criteria used for each method are:
+when \[|\theta^{(t+1)}- \theta^{(t)}|< \epsilon.\] 
 
-```{=tex}
-\begin{itemize}
-  \item Bisection: Stop when 
-  \[
-    |l'(\theta)| < 10^{-6} \quad \text{or the interval length } |a - b| < 10^{-6}.
-  \]
 
-  \item Newton-Raphson: Stop when 
-  \[
-    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
-  \]
-
-  \item Fisher Scoring: Stop when 
-  \[
-    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
-  \]
-
-  \item Secant Method: Stop when 
-  \[
-    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
-  \]
-\end{itemize}
-```
-
+### A simple example
 ```{r setup}
 library(Optimization)
 # Add Dataset
@@ -217,3 +197,129 @@ results_table <- data.frame(
 # Print table
 print(results_table)
 ```
+
+### Theory
+
+Consider a logit model $Y_i\sim$Bernoulli($p_i$), where
+$p_i=\frac{\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}}{1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}}$.
+
+Since the propobility mass function of Bernoulli distribution $Y_i$ is:
+\[
+P(Y_i = y_i) = p_i^{y_i} (1 - p_i)^{1 - y_i}, \quad y_i \in \{0, 1\}.
+\] where
+
+```{=tex}
+\begin{itemize}
+    \item If $y_i = 1$, the contribution is $p_i$.
+    \item If $y_i = 0$, the contribution is $1 - p_i$.
+\end{itemize}
+```
+Assuming the observations $Y_1, \dots, Y_n$ are independent, the
+likelihood function is:
+
+\[
+L(\beta) = \prod_{i=1}^{n} P(Y_i = y_i \mid x_i) = \prod_{i=1}^{n} p_i^{y_i} (1 - p_i)^{1 - y_i},
+\] where $\beta = (\beta_0, \beta_1, \beta_2)^T$ is the vector of
+parameters to estimate.\
+Each term $p_i^{y_i} (1 - p_i)^{1 - y_i}$ represents the contribution of
+the $i$-th observation.
+
+The logarithm of the likelihood function: \[
+\begin{aligned}
+l(\beta) &= \log L(\beta)\\
+&=\sum_{i=1}^{n} \Big[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \Big]\\
+&= \sum_{i=1}^{n} \Big[ y_i \log(\frac{\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}{1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}) + (1 - y_i) \log(1 - \frac{\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}{1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}) \Big]\\
+&= \sum_{i=1}^{n} \Big[ y_i \log(\frac{\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}{1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}) + (1 - y_i) \log( \frac{1}{1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}) \Big]\\
+ &= \sum_{i=1}^{n} \Big[ y_i \left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)  - y_i \log(1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}) - (1 - y_i) \log( 1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}) \Big]\\  
+&= \sum_{i=1}^{n} \Big[ y_{i} \left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right) - \log( 1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)})   \Big] 
+\end{aligned}
+\]
+
+The score function $\ell'(\beta_{i})$ and hessian matrix is needed to
+define Newton-Raphson algorithm.
+
+First, compute the score function $\ell'(\beta_{i})$: \[
+\begin{aligned}
+\frac{\partial\ell}{\partial \beta_{j}} & = \frac{\partial}{\partial \beta_{j}}\sum_{i=1}^{n} \Big[ y_{i} \left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right) - \log( 1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)})   \Big] \\
+    &= \sum_{i=1}^{n} y_{i}  x_{ij} - \frac{\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}x_{ij}}{1+\exp{\left(\beta_0+\beta_1
+    x_{i1}+\beta_2 x_{i2}\right)}}\\
+    &=\sum_{i=1}^{n} (y_{i} - p_{i})  x_{ij}
+\end{aligned}
+\]
+
+Then, compute the Hessian matrix
+$\frac{\partial^2l}{\partial \beta_{j}\beta_{k}}$: \[
+\begin{aligned}
+\frac{\partial^2\ell}{\partial \beta_{k}\beta_{j}} &= \frac{\partial}{\partial \beta_{k}}\frac{\partial\ell}{\partial \beta_{j}}  \\
+&= \frac{\partial}{\partial \beta_{k}} \sum_{i=1}^{n} (y_{i} - p_{i})  x_{ij} \\
+&= -\sum_{i=1}^{n}  x_{ij}  \frac{\partial p_{i}}{\partial \beta_{k}}\\
+&= -\sum_{i=1}^{n}  x_{ij}  \frac{\partial }{\partial \beta_{k}}\frac{\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}}{1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}}\\
+&=-\sum_{i=1}^{n}  x_{ij} \frac{\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}x_{ik}\Big[1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}\Big]}{\Big[1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}\Big]^2 } - \frac{\Big[\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}\Big]^2 x_{ik}}{\Big[1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}\Big]^2}\\
+&=-\sum_{i=1}^{n}  x_{ij}x_{ik}\frac{\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}}{\Big[1+\exp{\left(\beta_0+\beta_1 x_{i1}+\beta_2 x_{i2}\right)}\Big]^2}\\
+&=-\sum_{i=1}^{n}  p_{i}(1-p_{i})x_{ij}x_{ik} 
+\end{aligned}
+\]
+
+### A simple example
+```{r}
+# Load necessary libraries
+library(Optimization)
+library(ggplot2)
+library(dplyr) # Summary data
+library(knitr)
+library(kableExtra)
+library(webshot2)
+
+data <- data.frame(
+  cups = c(0, 2, 4, 5, 0, 2, 4, 5),
+  gender = c(1, 1, 1, 1, 0, 0, 0, 0), # male=1, female=0
+  r = c(9, 94, 53, 60, 11, 59, 53, 28),
+  n = c(41, 213, 127, 142, 67, 211, 133, 76)
+)
+
+# Calculate observed probabilities
+data$p_obs <- data$r / data$n
+
+# Design matrix with intercept
+X <- model.matrix(~ cups + gender, data = data)
+y <- data$p_obs
+
+# Run Newton's method
+output <- multi_newton(X, y)
+
+# Output results
+coef <- c(output$coefficients)
+se <- c(output$standard_errors)
+param_names <- colnames(X)
+
+print(se)
+# Output as a table
+results_df <- data.frame(
+  Parameter = param_names,
+  Estimate = round(coef, 3),
+  Std_error = round(se, 3),
+  Z_value = round(coef/se, 3),
+  P_value = round(2 * pnorm(-abs(coef/se)), 4),
+  stringsAsFactors = FALSE
+)
+
+print(results_df, row.names = FALSE)
+```
+
+
+
