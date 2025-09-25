@@ -1,0 +1,219 @@
+---
+title: "Introduction_to_Univaribale_Optimization"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction_to_Univaribale_Optimization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The 'Optimization' package provides four univaraible optimization methods to estimate $\theta$. Including:
+\begin{enumerate}
+  \item Bisection
+  \item Newton-Raphson
+  \item Fisher Scoring
+  \item Secant Method 
+\end{enumerate}
+
+As for Bisection, Newton-Raphson, Fisher Scoring, Secant Method, we can
+find the formula to estimate $\hat{\theta}$ in the book, i.e.
+
+The updating equation for Bisection method is $$
+[a_{t}, x^{(t)}] = 
+\begin{cases}
+[a_{t}, x^{(t)}], \text{ if } g'(a_{t})g'(x^{(t)}) \leq 0\\
+[x^{(t)}, b_{t}], \text{ if } g'(a_{t})g'(x^{(t)}) > 0
+\end{cases}
+$$ and $x^{(t+1)} = \frac{(a_{(t+1)}+ b_{(t+1})}{2}$.
+
+The updating equation for Newton's method is $$
+\theta^{(t+1)} = \theta^{(t)} - \frac{\ell'(\theta^{(t)})}{\ell''(\theta^{(t)})}
+$$
+
+The updating equation for Fisher Scoring is $$
+\theta^{(t+1)} = \theta^{(t)} + \ell'(\theta^{(t)})I'(\theta^{(t)})^{-1}
+$$
+
+The updating equation for Secant method is $$
+x^{(t+1)} = x^{(t)} - g'(x^{(t)})\frac{x^{(t)} - x^{(t-1)}}{g'(x^{(t)}) - g'(x^{(t-1)})}
+$$ Then yields, $$
+\theta^{(t+1)} = \theta^{(t)} - \ell'(\theta^{(t)})\frac{\theta^{(t)} - \theta^{(t-1)}}{\ell'(\theta^{(t)}) - \ell'(\theta^{(t-1)})}
+$$
+
+The one thing is to prove the Fisher information of the Cauchy
+distribution: $$
+I(\theta) = - \mathbb{E}[\ell''(\theta)] = \frac{n}{2}
+$$
+
+\textbf{Proof:} We have computed the likelihood contribution
+$\ell_i(\theta)$ of a single observation $X_i$ and its derivative
+$\ell_i'(\theta)$ in Problem 1. The second derivative with respect to
+$\theta$ is: $$
+\ell_i''(\theta) = -2\cdot\frac{1-(X_i-\theta)^2}{\big(1+(X_i-\theta)^2\big)^2}.
+$$
+
+Consider to compute the expectation of the second derivative
+$\mathbb{E}\big[\ell_i''(\theta)\big]$.
+
+Let $Y = X_i - \theta$. Then $Y\sim\text{Cauchy}(0,1)$ with density $$
+f_Y(y) = \frac{1}{\pi(1+y^2)}.
+$$ Thus $$
+\mathbb{E}\big[\ell_i''(\theta)\big]
+= -2 \int_{-\infty}^{\infty} \frac{1-y^2}{\big(1+y^2\big)^2}\cdot \frac{1}{\pi(1+y^2)}\,dy
+= -\frac{2}{\pi}\int_{-\infty}^{\infty} \frac{1-y^2}{(1+y^2)^3}\,dy.
+$$
+
+Define $$
+I := \int_{-\infty}^{\infty} \frac{1-y^2}{(1+y^2)^3}\,dy.
+$$ We evaluate $I$ by splitting the integrand: $$
+I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy
+    - \int_{-\infty}^{\infty}\frac{y^2}{(1+y^2)^3}\,dy.
+$$
+
+First, the residue theorem is used to compute
+$$ I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy$$ Consider the
+complex function
+
+$$
+f(z) = \frac{1}{(1+z^2)^3}.
+$$
+
+On the real axis, this matches the integrand. The poles occur at
+$1+z^2=0 \Rightarrow z = \pm i$ and both are poles of order three.
+
+We choose the semicircular contour in the upper half-plane with radius
+$R \to \infty$. Since the integrand decays like $1/z^6$ as
+$|z|\to\infty$, the contribution along the arc vanishes. Therefore,
+
+$$
+\int_{-\infty}^{\infty} \frac{dx}{(1+x^2)^3} = 2\pi i \cdot \text{Res}(f, z=i).
+$$
+
+At $z=i$ (a pole of order three), the residue is given by
+
+$$
+\begin{aligned}
+\text{Res}(f,z=i) &= \frac{1}{2!} \lim_{z\to i} \frac{d^2}{dz^2}\Big[ (z-i)^3 f(z) \Big]\\
+&= \frac{1}{2!} \lim_{z\to i} \frac{d^2}{dz^2}\Big[ (z-i)^3 \frac{1}{(1+z^2)^3} \Big]\\
+&= \frac{1}{2!} \lim_{z\to i} \frac{d^2}{dz^2}\Big[ \frac{1}{(z+i)^3} \Big]\\
+&= \frac{1}{2!} \lim_{z\to i} 12 (z+i)^{-5}\\
+&=  2\pi i \cdot \frac{3}{16 i} = \frac{3\pi}{8}.
+\end{aligned}
+$$
+
+Therefore,
+$I = \int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy = \frac{3\pi}{8}.$
+
+Then, compute $$\int_{-\infty}^{\infty}\frac{y^2}{(1+y^2)^3}\,dy $$ Let
+$y=\tan\theta$, then $dy=\sec^{2}\theta \, d\theta$ and
+$1+y^{2}=\sec^{2}\theta$.\
+The integral becomes
+
+$$
+I = \int_{-\pi/2}^{\pi/2} \frac{\tan^{2}\theta}{\sec^{6}\theta} \cdot \sec^{2}\theta \, d\theta
+= \int_{-\pi/2}^{\pi/2} \tan^{2}\theta \cos^{4}\theta \, d\theta.
+$$
+
+Since $\tan\theta = \frac{\sin\theta}{\cos\theta}$, we get
+
+$$
+I = \int_{-\pi/2}^{\pi/2} \sin^{2}\theta \cos^{2}\theta \, d\theta = 2 \int_{0}^{\pi/2} \sin^{2}\theta \cos^{2}\theta \, d\theta =2 \cdot \int_{0}^{\pi/2} \frac{1}{8}\bigl(1-\cos(4\theta)\bigr)\, d\theta
+= \frac{1}{4}\left[\theta - \tfrac{1}{4}\sin(4\theta)\right]_{0}^{\pi/2}= \frac{\pi}{8}.
+$$
+
+Therefore $$
+I =\int_{-\infty}^{\infty}\frac{1}{(1+y^2)^3}\,dy - \int_{-\infty}^{\infty}\frac{y^2}{(1+y^2)^3}\,dy = \frac{3\pi}{8}-\frac{\pi}{8}=\frac{\pi}{4}.
+$$
+
+Hence $$
+\mathbb{E}\big[\ell_i''(\theta)\big] = -\frac{2}{\pi}\cdot \frac{\pi}{4} = -\frac{1}{2}.
+$$
+
+The Fisher information for a single observation is $$
+I_1(\theta) = -\mathbb{E}\big[\ell_i''(\theta)\big] = -\left(-\frac{1}{2}\right)=\frac{1}{2}.
+$$ For $n$ independent observations the total Fisher information is $$
+I_n(\theta) = n I_1(\theta) = \frac{n}{2}.
+$$
+
+
+### The convergence criteria
+
+We use the absolute convergence criterion for each method, i.e. stopping
+when $$|\theta^{(t+1)}- \theta^{(t)}|< \epsilon.$$ So, the convergence
+criteria used for each method are:
+
+```{=tex}
+\begin{itemize}
+  \item Bisection: Stop when 
+  \[
+    |l'(\theta)| < 10^{-6} \quad \text{or the interval length } |a - b| < 10^{-6}.
+  \]
+
+  \item Newton-Raphson: Stop when 
+  \[
+    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
+  \]
+
+  \item Fisher Scoring: Stop when 
+  \[
+    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
+  \]
+
+  \item Secant Method: Stop when 
+  \[
+    |\theta_{\text{new}} - \theta_{\text{old}}| < 10^{-6}.
+  \]
+\end{itemize}
+```
+
+```{r setup}
+library(Optimization)
+# Add Dataset
+data1 <- c(-8.86, -6.82, -4.03, -2.84, 0.14, 0.19, 0.24, 0.27, 0.49, 0.62, 0.76, 
+           1.09, 1.18, 1.32, 1.36, 1.58, 1.58, 1.78, 2.13, 2.15, 2.36, 4.05, 4.11, 4.12, 6.83)
+
+l_prime <- function(theta, x) {
+  sum(2 * (x - theta) / (1 + (x - theta)^2))
+}
+
+# Use functions defined in the package
+bisection_result <- bisection(0, 2, data1)
+newton_result <- newton(median(data1), data1)
+fisher_result <- fisher_scoring(median(data1), data1)
+secant_result <- secant(0, 2, data1)
+
+c(bisection_result$theta,
+  newton_result$theta,
+  fisher_result$theta,
+  secant_result$theta)
+
+# Create a table
+results_table <- data.frame(
+  Method = c("Bisection", "Newton-Raphson", "Fisher Scoring", "Secant"),
+  Theta = c(
+    bisection_result$theta,
+    newton_result$theta,
+    fisher_result$theta,
+    secant_result$theta
+  ),
+  Iterations =c(
+    bisection_result$iteration,
+    newton_result$iteration,
+    fisher_result$iteration,
+    secant_result$iteration
+    
+  )
+)
+
+# Print table
+print(results_table)
+```
