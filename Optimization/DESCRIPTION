@@ -1,11 +1,11 @@
 Package: Optimization
 Type: Package
-Title: What the package does (short line)
+Title: An optimization package 
 Version: 1.0
 Date: 2025-09-19
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Yingli Li
+Maintainer: Who to complain to <Yingli.li@colostate.edu>
+Description: A package to optimize univariable and multivariable problem with bisection, newton's method, fisher information and secant method.
 License: What license is it under?
 Imports: Rcpp (>= 1.1.0)
 LinkingTo: Rcpp, RcppArmadillo
