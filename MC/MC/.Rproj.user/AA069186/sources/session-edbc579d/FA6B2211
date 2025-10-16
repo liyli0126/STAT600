@@ -1,0 +1,27 @@
+{
+    "id": "FA6B2211",
+    "path": "~/Desktop/STAT600/MC/R/MCR.R",
+    "project_path": "R/MCR.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1760649108236.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "94,0",
+        "scrollLine": "69"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1760649598,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1760649598401,
+    "read_only": false,
+    "read_only_alternatives": []
+}

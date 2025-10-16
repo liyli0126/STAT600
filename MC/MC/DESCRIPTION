@@ -1,0 +1,13 @@
+Package: MC
+Type: Package
+Title: Five Monte Carlo Sampling Methods for estimation
+Version: 1.0
+Date: 2025-10-16
+Author: Yingli Li
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: Implementation of various Monte Carlo methods for estimating results
+License: GPL-3
+Imports: Rcpp (>= 1.1.0)
+LinkingTo: Rcpp, RcppArmadillo
+RoxygenNote: 7.3.2
+SystemRequirements: C++11
