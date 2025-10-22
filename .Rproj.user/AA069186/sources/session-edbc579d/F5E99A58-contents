@@ -1,0 +1,247 @@
+---
+title: "Introduction of Patchwork"
+author: "Yingli Li"
+date: "2025-10-21"
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{graphicx}
+- \usepackage{geometry}
+- \usepackage{array}
+- \usepackage{makecell}
+- \usepackage{hyperref}
+- \usepackage{animate} 
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 4
+
+vignette: >
+  %\VignetteIndexEntry{Introduction of Patchwork}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
+---
+
+```{r, warning=FALSE, message=FALSE, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(patchwork)
+  library(gifski)
+})
+```
+
+```{r setup}
+library(patchwork)
+```
+
+The package is updated in the github:
+<a href="https://github.com/thomasp85/patchwork/blob/main/vignettes/patchwork.Rmd">https://github.com/thomasp85/patchwork/blob/main/vignettes/patchwork.Rmd</a>
+
+**The author:** Thomas Lin Pedersen
+
+He focuses on developing tools for data visualization and is responsible for most of the <code>R</code> graphic stack, from high-level tools such as <code>ggplot2</code> and <code>patchwork</code> and all the way down to the nitty-gritty lower level with font rendering and graphics devices such as <code>ragg</code> and <code>textshaping</code>. 
+
+His website: "https://www.data-imaginist.com/about"
+```{r, echo=FALSE, out.width='85%', fig.cap="Yonder，source: Thomas, 2021"}
+knitr::include_graphics("yonder14.jpeg")
+```
+Source link: <a href="https://thomaslinpedersen.art/work/yonder/">https://thomaslinpedersen.art/work/yonder/</a>
+
+## Why Use Patchwork?
+
+**Challenges:**
+
+- Multiple related graphics need to be displayed side by side
+- Manually adjusting the graphic position is time-consuming
+- Maintaining consistency between graphics is difficulty
+
+Patchwork is a package designed to make plot composition in <code>R</code> extremely simple and powerful. It is mainly intended for users of <code>ggplot2</code> and goes to great
+lengths to make sure <code>ggplots</code> are properly aligned no matter the complexity of your composition.
+
+
+## Requirements/Dependencies
+The <code>patchwork</code> depends on the package <code>ggplot2</code>. 
+
+```{r}
+library(ggplot2)
+```
+
+## Example plots
+We'll start by creating some example plots to use throughout this tutorial:
+
+```{r}
+p1 <- ggplot(mtcars) + 
+  geom_point(aes(mpg, disp)) + 
+  ggtitle('Plot 1')
+
+p2 <- ggplot(mtcars) + 
+  geom_boxplot(aes(gear, disp, group = gear)) + 
+  ggtitle('Plot 2')
+
+p3 <- ggplot(mtcars) + 
+  geom_point(aes(hp, wt, colour = mpg)) + 
+  ggtitle('Plot 3')
+
+p4 <- ggplot(mtcars) + 
+  geom_bar(aes(gear)) + 
+  facet_wrap(~cyl) + 
+  ggtitle('Plot 4')
+```
+
+These plots are fairly meaningless and only serve to illustrate plot 
+composition - don't read anything into the resulting plots.
+
+## Basic usage
+The absolute simplest use is the extension of the `+` operator used in ggplot2,
+to allow adding plots together:
+
+```{r}
+p1 + p2
+```
+
+When adding plots together, the last added plot will be the active one, and will
+receive any addition of new ggplot2 objects such as geoms, labels, etc:
+
+```{r}
+p1 + p2 + labs(subtitle = 'This will appear in the last plot')
+```
+
+## Controlling layout
+By default, patchwork will try to keep the grid square, and fill it out in row order.
+
+```{r}
+p1 + p2 + p3 + p4
+```
+
+This can be controlled with the addition of a `plot_layout()`
+
+```{r}
+p1 + p2 + p3 + p4 + plot_layout(nrow = 3, byrow = FALSE)
+```
+
+`plot_layout()` have all sorts of amazing features for controlling the layout of
+your composition. See the *Layout* vignette for a full rundown of all its 
+options.
+
+## Stacking and packing plots
+Often you want to place plots on top of each other, or beside each other, rather than fill out a grid. While this can be accomplished by adding a one-row or  one-column layout, patchwork also provides two operators that does this directly and further provides visual cues to the layout. `|` will place the plots beside each other, while `/` will stack them:
+
+```{r}
+p1 / p2
+```
+
+As patchworks can be nested, these two operators are often enough to create 
+rather complex layouts:
+
+```{r}
+p1 | (p2 / p3)
+```
+
+## Annotating the composition
+It is often necessary to add titles, captions, tags, etc. to a composition. This
+can be achieved by adding a `plot_annotation()` to the patchwork:
+
+```{r}
+(p1 | (p2 / p3)) + 
+  plot_annotation(title = 'The surprising story about mtcars')
+```
+
+Patchwork also provides auto-tagging capabilities, in order to identify subplots
+in text:
+
+```{r}
+p1 + p2 + p3 + 
+  plot_annotation(tag_levels = 'I')
+```
+
+The tagging can be either arabic or roman numbers, or latin letters, and 
+separate tags can be given for different nesting levels. See the *Annotation* 
+vignette for more information.
+
+
+
+
+## Adding an empty area
+
+Sometimes all that is needed is to have an empty area in between plots. This can be done by adding a `plot_spacer()`. It will occupy a grid cell in the same way a plot without any outer elements (titles, ticks, strips, etc.):
+
+```{r}
+p1 + plot_spacer() + p2 + plot_spacer() + p3 + plot_spacer()
+```
+
+
+## Controlling the grid
+
+If nothing is given, patchwork will try to make a grid as square as possible, erring to the side of a horizontal grid if a square is not possible (it uses the same heuristic as `facet_wrap()` in ggplot2). Further, each column and row in the grid will take up the same space. Both of these can be controlled with `plot_layout()`
+
+```{r}
+p1 + p2 + p3 + p4 +
+  plot_layout(widths = c(2, 1))
+```
+
+When grid sizes are given as a numeric, it will define the relative sizing of the panels. In the above, the panel area of the first column is twice that of the second column. It is also possible to supply a unit vector instead:
+
+```{r}
+p1 + p2 + p3 + p4 +
+  plot_layout(widths = c(2, 1), heights = unit(c(4, 2), c('cm', 'null')))
+```
+
+In the last example the first row will always occupy 4cm, while the second will expand to fill the remaining area.
+
+It is important to remember that sizing only affects the plotting region (*panel area*). If a plot has, e.g., very wide y-axis text it will *not* be penalized and get a smaller overall plotting region.
+
+
+
+## Avoiding alignment
+
+Patchwork is designed to do it's utmost to align the plotting areas, and while this is generally sensible in order to create a calm and good looking layout it sometimes gets in the way of creating what you want. Below we will see two such cases. In both situation the answer is the `wrap_elements()` function.
+
+### Huge axis text causing white space.
+
+Sometimes one of the plots has much longer axis text or axis labels than the other:
+
+```{r}
+p2mod <- p2 + labs(x = "This is such a long\nand important label that\nit has to span many lines")
+p1 | p2mod
+```
+
+Depending on what you prefer you might want the leftmost plot to fill out as much room as possible instead of being aligned to the rightmost panel. Putting a ggplot or a patchwork inside `free()` removes any alignment from the plot.
+
+```{r}
+free(p1) | p2mod
+```
+
+
+## Insets
+
+An alternative to placing plots in a grid is to place a plot as an inset in another plot. As we saw above, this is achievable with a setting up a layout with multiple overlapping `area()` specifications. However, this approach still uses an underlying grid, which may be constraining. Another approach is to use the `inset_element()` function which marks a plot or graphic object to be placed as an inset on the previous plot. It will thus not take up a slot in the provided layout, but share the slot with the previous plot. `inset_element()` allows you to freely position your inset relative to either the panel, plot, or full area of the previous plot, by specifying the location of the left, bottom, right, and top edge of the inset.
+
+```{r}
+p1 + inset_element(p2, left = 0.6, bottom = 0.6, right = 1, top = 1)
+```
+
+
+## Alignment Across Multiple Pages
+```{r}
+library(gifski)
+```
+
+Usually you'll have a list of plots and simply want to align all of these 
+before rendering them to a file. All of the operations above have been wrapped
+in the `align_patches()` function:
+
+```{r, animation.hook='gifski'}
+plots_aligned <- align_patches(p1, p2, p3, p4)
+for (p in plots_aligned) {
+  plot(p)
+}
+```
+
+## Want more?
+ Look into the other guides to find out more about, e.g.
+how to **collect all legends in one place and remove duplicates** ("https://patchwork.data-imaginist.com/articles/guides/layout.html#controlling-guides") or **aligning plots across multiple pages**("https://patchwork.data-imaginist.com/articles/guides/multipage.html". )
