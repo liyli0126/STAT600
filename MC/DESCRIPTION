@@ -11,3 +11,7 @@ Imports: Rcpp (>= 1.1.0)
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.2
 SystemRequirements: C++11
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
